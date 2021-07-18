@@ -1,0 +1,12 @@
+# Default ignored files
+/shelf/
+/workspace.xml
+/sonarlint
+/libraries
+compiler.xml
+gradle.xml
+jarRepositories.xml
+misc.xml
+runConfigurations.xml
+vcs.xml
+
