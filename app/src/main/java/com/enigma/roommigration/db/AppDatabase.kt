@@ -35,7 +35,7 @@ abstract class AppDatabase : RoomDatabase() {
                     if (cursor.count == 0) return@use listOf()
                     cursor.moveToFirst()
                     return@use buildList {
-                        while (cursor.moveToNext()) {
+                        do {
                             val nameIndex = cursor.getColumnIndexOrThrow("name")
                             val name = cursor.getStringOrNull(nameIndex).orEmpty()
                             val names = name.split(" ")
@@ -45,7 +45,7 @@ abstract class AppDatabase : RoomDatabase() {
                             val id = cursor.getIntOrNull(idIndex) ?: continue
 
                             add(Triple(id, firstName, lastName))
-                        }
+                        } while (cursor.moveToNext())
                     }
                 }
             }
