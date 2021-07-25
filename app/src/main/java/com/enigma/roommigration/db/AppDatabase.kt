@@ -1,6 +1,7 @@
 package com.enigma.roommigration.db
 
 import android.content.Context
+import androidx.annotation.VisibleForTesting
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
@@ -19,7 +20,8 @@ abstract class AppDatabase : RoomDatabase() {
             AppDatabase::class.java, "migration-db"
         ).addMigrations(*MIGRATIONS).build()
 
-        private val MIGRATION_1_2 = object : Migration(1, 2) {
+        @VisibleForTesting
+        val MIGRATION_1_2 = object : Migration(1, 2) {
             override fun migrate(database: SupportSQLiteDatabase) {
                 database.execSQL("ALTER TABLE `user` ADD COLUMN `photo` TEXT")
             }
