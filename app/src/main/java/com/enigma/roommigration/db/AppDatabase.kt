@@ -1,6 +1,7 @@
 package com.enigma.roommigration.db
 
 import android.content.Context
+import androidx.annotation.VisibleForTesting
 import androidx.core.database.getIntOrNull
 import androidx.core.database.getStringOrNull
 import androidx.room.Database
@@ -21,7 +22,8 @@ abstract class AppDatabase : RoomDatabase() {
             AppDatabase::class.java, "migration-db"
         ).addMigrations(*MIGRATION_SCRIPTS).build()
 
-        private val MIGRATION_1_2 = object : Migration(1, 2) {
+        @VisibleForTesting
+        val MIGRATION_1_2 = object : Migration(1, 2) {
 
             override fun migrate(database: SupportSQLiteDatabase) {
                 val names = getNames(database)
@@ -31,7 +33,7 @@ abstract class AppDatabase : RoomDatabase() {
             }
 
             private fun getNames(database: SupportSQLiteDatabase): List<Triple<Int, String, String>> {
-                return database.query("SELECT * FROM user").use { cursor ->
+                return database.query("SELECT * FROM User").use { cursor ->
                     if (cursor.count == 0) return@use listOf()
                     cursor.moveToFirst()
                     return@use buildList {
@@ -63,8 +65,8 @@ abstract class AppDatabase : RoomDatabase() {
             }
 
             private fun renameTempUsersTable(database: SupportSQLiteDatabase) {
-                database.execSQL("DROP TABLE `user`")
-                database.execSQL("ALTER TABLE `user_temp` RENAME TO `user`")
+                database.execSQL("DROP TABLE `User`")
+                database.execSQL("ALTER TABLE `user_temp` RENAME TO `User`")
             }
 
             private fun createTempUsersTable(database: SupportSQLiteDatabase) {
