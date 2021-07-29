@@ -10,7 +10,7 @@ import androidx.room.RoomDatabase
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
-@Database(entities = [User::class], version = 2, exportSchema = true)
+@Database(entities = [User::class], version = 3, exportSchema = true)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun getUserDao(): UserDao
@@ -78,7 +78,17 @@ abstract class AppDatabase : RoomDatabase() {
             }
         }
 
-        private val MIGRATION_SCRIPTS = arrayOf<Migration>(MIGRATION_1_2)
+        @VisibleForTesting
+        val MIGRATION_2_3 = object : Migration(2, 3) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("CREATE TABLE IF NOT EXISTS `temp_user` (`roll_no` INTEGER NOT NULL, `first_name` TEXT, `last_name` TEXT, PRIMARY KEY(`roll_no`))")
+                database.execSQL("INSERT INTO temp_user (`roll_no`, `first_name`, `last_name`) SELECT `uid`, `first_name`, `last_name` FROM `User`")
+                database.execSQL("DROP TABLE `User`")
+                database.execSQL("ALTER TABLE `temp_user` RENAME TO `User`")
+            }
+        }
+
+        private val MIGRATION_SCRIPTS = arrayOf<Migration>(MIGRATION_1_2, MIGRATION_2_3)
 
     }
 }
