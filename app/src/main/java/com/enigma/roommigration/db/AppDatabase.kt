@@ -81,8 +81,13 @@ abstract class AppDatabase : RoomDatabase() {
         @VisibleForTesting
         val MIGRATION_2_3 = object : Migration(2, 3) {
             override fun migrate(database: SupportSQLiteDatabase) {
-                database.execSQL("CREATE TABLE IF NOT EXISTS `temp_user` (`roll_no` INTEGER NOT NULL, `first_name` TEXT, `last_name` TEXT, PRIMARY KEY(`roll_no`))")
-                database.execSQL("INSERT INTO temp_user (`roll_no`, `first_name`, `last_name`) SELECT `uid`, `first_name`, `last_name` FROM `User`")
+                database.execSQL("""CREATE TABLE IF NOT EXISTS `temp_user` 
+                                    (`roll_no` INTEGER NOT NULL, `first_name` TEXT, 
+                                    `last_name` TEXT, PRIMARY KEY(`roll_no`))""")
+
+                database.execSQL("""INSERT INTO temp_user (`roll_no`, `first_name`, `last_name`)
+                                        SELECT `uid`, `first_name`, `last_name` FROM `User`""")
+
                 database.execSQL("DROP TABLE `User`")
                 database.execSQL("ALTER TABLE `temp_user` RENAME TO `User`")
             }
