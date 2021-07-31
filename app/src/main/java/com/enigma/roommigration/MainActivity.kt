@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.enigma.roommigration.db.AppDatabase
 import com.enigma.roommigration.db.User
 
+@ExperimentalStdlibApi
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

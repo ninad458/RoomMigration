@@ -9,6 +9,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
+@ExperimentalStdlibApi
 @RunWith(AndroidJUnit4::class)
 class UserMigrationTest {
 
@@ -32,6 +33,30 @@ class UserMigrationTest {
             .use {
                 it.query("SELECT * FROM `User`").use { cursor ->
                     assertEquals(cursor.count, 1)
+                }
+            }
+    }
+
+    @Test
+    fun migrate3_4() {
+        migrationTestHelper.createDatabase(TEST_DB, 3).use {
+            it.execSQL("INSERT INTO `User` (`uid`, `name`) VALUES (0, '')")
+            it.execSQL("INSERT INTO `User` (`uid`, `name`) VALUES (1, 'Hello')")
+            it.execSQL("INSERT INTO `User` (`uid`, `name`) VALUES (2, 'Hello World')")
+            it.execSQL("INSERT INTO `User` (`uid`, `name`) VALUES (3, 'Hello World World')")
+        }
+
+        migrationTestHelper.runMigrationsAndValidate(TEST_DB, 4, true, AppDatabase.MIGRATION_3_4)
+            .use {
+                it.query("SELECT * FROM `User`").use { cursor ->
+                    assertEquals(cursor.count, 4)
+
+                    cursor.moveToFirst()
+                    cursor.moveToNext()
+                    val firstName = cursor.getString(cursor.getColumnIndex("first_name"))
+                    val lastName = cursor.getString(cursor.getColumnIndex("last_name"))
+                    assertEquals(firstName, "Hello")
+                    assertEquals(lastName, "")
                 }
             }
     }
